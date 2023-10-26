@@ -1,0 +1,9 @@
+*.pyc
+venv/
+
+# .gitignore
+Pulumi.*.yaml
+.pulumi/
+
+mykey
+mykey.pub
