@@ -1,0 +1,58 @@
+name: Python Integration Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Pytest Integration Job  
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_SECRET: ${{ secrets.POSTGRES_SECRET }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2 
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12' 
+
+      - name: Install dependencies and gunicorn
+        run: |
+          sudo apt-get install -y libpq-dev
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install gunicorn
+
+      - name: Start Flask application
+        run: gunicorn app:create_app -b 127.0.0.1:8000 &
+
+      - name: Run tests
+        run: pytest
+        env:
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_SECRET: ${{ secrets.POSTGRES_SECRET }}
