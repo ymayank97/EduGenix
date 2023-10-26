@@ -1,4 +1,7 @@
-# EduGenix: Assignment Generator Flask Application Deployment with Pulumi
+# EduGenix
+
+> Assignment Generator Flask Application Deployment with Pulumi
+
 
 ## Overview
 
