@@ -1,0 +1,38 @@
+{
+    "agent": {
+      "metrics_collection_interval": 10,
+      "logfile": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log"
+    },
+    "logs": {
+      "logs_collected": {
+        "files": {
+          "collect_list": [
+            {
+              "file_path": "/var/log/flask/info.log",
+              "log_group_name": "flask-app-logs",
+              "log_stream_name": "access-log-stream-{instance_id}",
+              "timestamp_format": "%Y-%m-%d %H:%M:%S",
+              "timezone": "LOCAL"
+            },
+            {
+              "file_path": "/var/log/flask/error.log",
+              "log_group_name": "flask-app-logs",
+              "log_stream_name": "error-log-stream-{instance_id}",
+              "timestamp_format": "%Y-%m-%d %H:%M:%S",
+              "timezone": "LOCAL"
+            }
+          ]
+        }
+      }
+    },
+    "metrics": {
+      "metrics_collected": {
+        "statsd": {
+          "service_address": ":8125",
+          "metrics_collection_interval": 15,
+          "metrics_aggregation_interval": 10
+        }
+      }
+    }
+  }
+  
