@@ -22,11 +22,30 @@ class User(db.Model):
     def verify_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
+class Submission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assignment_id = db.Column(db.String, db.ForeignKey('assignment.id'), nullable=False)    
+    submission_url = db.Column(db.String(200), nullable=False)
+    submission_date = db.Column(db.DateTime, default=datetime.utcnow)
+    assignment_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def serialize(self):
+        """ Return object data in easily serializable format"""
+        return {
+            'id': self.id,
+            'assignment_id': self.assignment_id,
+            'submission_url': self.submission_url,
+            'submission_date': self.submission_date.isoformat(),
+            'assignment_updated': self.assignment_updated.isoformat() if self.assignment_updated else None
+            }
+    
+
+
 
 
 class Assignment(db.Model):
     id = db.Column(db.String, primary_key=True)  # UUID as string
-    name = db.Column(db.String(50), nullable=False, unique=True)
+    name = db.Column(db.String(50), nullable=False)
     points = db.Column(db.Integer, nullable=False)
     num_of_attempts = db.Column(db.Integer, nullable=False)
     deadline = db.Column(db.DateTime, nullable=False)

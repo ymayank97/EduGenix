@@ -32,9 +32,6 @@ def create_response(status_code, data=None):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
-def check_request_validity(allowed_headers):
-    return set(request.headers.keys()) - allowed_headers or request.data or request.args
-
 
 def load_users_from_csv():
     with open('login.csv', 'r') as file:

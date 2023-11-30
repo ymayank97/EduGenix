@@ -47,17 +47,17 @@ jobs:
     - name: Build AMI with Packer
       run: |
         packer init .
-        packer build -debug -var "aws_region=$AWS_REGION" ./packer.pkr.hcl 
+        packer build -var "aws_region=$AWS_REGION" ./packer.pkr.hcl 
 
-    - name: Upload Packer logs
-      if: always()  
-      uses: actions/upload-artifact@v2
-      with:
-        name: packer-logs
-        path: packerlog.txt
+    # - name: Upload Packer logs
+    #   if: always()  
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: packer-logs
+    #     path: packerlog.txt
 
-    - name: Extract and Store AMI ID
-      run: |
-        AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
-        echo "Extracted AMI_ID: $AMI_ID"
-        aws ssm put-parameter --region $AWS_REGION --name "/webapp/ami-id" --value "$AMI_ID" --type "String" --overwrite --debug
+    # - name: Extract and Store AMI ID
+    #   run: |
+    #     AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ":" -f2)
+    #     echo "Extracted AMI_ID: $AMI_ID"
+    #     aws ssm put-parameter --region $AWS_REGION --name "/webapp/ami-id" --value "$AMI_ID" --type "String" --overwrite --debug

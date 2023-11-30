@@ -72,6 +72,10 @@ source "amazon-ebs" "debian" {
   instance_type = var.instance_type
   region        = var.aws_region
   subnet_id     = var.subnet_id
+  tags = {
+    Name        = "debian_ami_12"
+    Environment = "dev"
+  }
 
 
   aws_polling {
@@ -138,7 +142,6 @@ build {
     ]
   }
 
-
   # Setting up Gunicorn as a service
   provisioner "shell" {
     inline = [
@@ -161,7 +164,6 @@ build {
     "EOF\"", ]
   }
 
-
   # Configuring Nginx
   provisioner "shell" {
     inline = [
@@ -177,9 +179,30 @@ build {
     "EOF\"", ]
   }
 
-  post-processor "manifest" {
-    output     = "packer-manifest.json"
-    strip_path = true
+  provisioner "shell" {
+    inline = [
+      "sudo wget https://s3.amazonaws.com/amazoncloudwatch-agent/debian/amd64/latest/amazon-cloudwatch-agent.deb",
+      "sudo dpkg -i -E ./amazon-cloudwatch-agent.deb",
+      "sudo systemctl enable amazon-cloudwatch-agent"
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sudo su -<<EOF",
+      "mkdir -p /opt/aws/amazon-cloudwatch-agent/etc",
+      "mkdir -p /var/log/flask",
+      "touch /var/log/flask/info.log",
+      "touch /var/log/flask/error.log",
+      "sudo chown webapp_user:webapp_user /var/log/flask/info.log",
+      "sudo chown webapp_user:webapp_user /var/log/flask/error.log",
+      "sudo chown webapp_user:webapp_user /var/log/flask",
+      "echo 'Logging Started...' >> /var/log/flask/info.log",
+      "echo 'Error Logging Started...' >> /var/log/flask/error.log",
+      "cd ${var.app_dir}",
+      "mv amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc",
+      "EOF"
+    ]
   }
 
 }

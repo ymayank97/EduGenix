@@ -44,6 +44,11 @@ jobs:
           pip install -r requirements.txt
           pip install gunicorn
 
+      - name: Create log directory
+        run: |
+            sudo mkdir -p /var/log/flask
+            sudo chown -R $USER:$USER /var/log/flask
+
       - name: Start Flask application
         run: gunicorn app:create_app -b 127.0.0.1:8000 &
 

@@ -15,11 +15,11 @@ if not ON_GITHUB:
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'key')  # Default value is 'key'
-    
     DB_USER = os.getenv("DATABASE_USER")
     DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
     HOST_NAME = os.getenv("DATABASE_HOST")
     DB_NAME = os.getenv("DATABASE_NAME")
-    
+    SNS_TOPIC_ARN = os.getenv("SNS_TOPIC_ARN")
+    AWS_PROFILE_NAME = os.getenv("AWS_PROFILE_NAME")
     SQLALCHEMY_DATABASE_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{HOST_NAME}:5432/{DB_NAME}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
